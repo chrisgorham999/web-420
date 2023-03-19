@@ -24,9 +24,6 @@ const app = express();
 app.set('port', process.env.PORT || 3000);
 
 
-
-
-
 // tells the app what to use
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
