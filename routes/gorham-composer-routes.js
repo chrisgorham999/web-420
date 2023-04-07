@@ -153,4 +153,5 @@ const Composer = require("../models/gorham-composer");
     }
 });
 
+// exports the router
 module.exports = router;
