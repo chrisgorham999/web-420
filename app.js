@@ -17,6 +17,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const mongoose = require("mongoose");
 const composerAPI = require("./routes/gorham-composer-routes");
+const personAPI = require("./routes/gorham-person-routes");
 
 // use express as the app
 let app = express();
@@ -48,22 +49,22 @@ mongoose.connect(conn, {
 // object literal
 const options = {
     definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "WEB 420 RESTful APIs",
-            version: "1.0.0",
-        },
+      openapi: "3.0.0",
+      info: {
+        title: "WEB 420 RESTful APIs",
+        version: "1.0.0",
+      },
     },
-    apis: ["./routes/*.js"], // files containing annotations for the OpenAPI Specification
-};
-
-// creates a new variable and calls the swaggerJsdoc library using the options object literal
-const openapiSpecification = swaggerJsdoc(options);
-
-
-// wires the openapispecification variable to the app variable
+    apis: ["./routes/*.js"], //files containing annotations for the OpenAPI Specification
+  };
+  
+  // assigning a variable to call swaggerJsdoc
+  const openapiSpecification = swaggerJsdoc(options);
+  
+  // wire openapiSpecification to app variable
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 app.use("/api", composerAPI);
+app.use("/api", personAPI);
 
 // uses the http library to create a port and log to the console the port that is being listened to based on our port variable in the app
 http.createServer(app).listen(app.get("port"), function() {
