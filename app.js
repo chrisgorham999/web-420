@@ -32,18 +32,19 @@ app.use(express.json());
 app.use(express.urlencoded({"extended": true }));
 
 // mongoose connection address
-const conn = "mongodb+srv://web420_user:s3cret@bellevueuniversity.up6klva.mongodb.net/web420DB?retryWrites=true&w=majority";
+const conn = "mongodb+srv://web420_user:s3cret@bellevueuniversity.up6klva.mongodb.net/web420DB";
 
 // displays connection success or error messages
-mongoose.connect(conn, {
-    promiseLibrary: require("bluebird"),
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-}).then(() => {
+mongoose
+  .connect(conn, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
     console.log(`Connection to web420DB on MongoDB Atlas successful`);
-}).catch(err => {
+  })
+  .catch((err) => {
     console.log(`MongoDB Error: ${err.message}`);
-})
+  });
 
 
 

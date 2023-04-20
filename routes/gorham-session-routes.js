@@ -51,14 +51,14 @@ const saltRounds = 10;
  *       '501':
  *         description: MongoDB Exception
  */
- router.post('/signup', async(req, res) => {
+ router.post("/signup", async (req, res) => {
     try {
-        let hashedPassword = bcrypt.hashSync(req.body.password, saltRounds); // salt/hash the password
+        const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds); // salt/hash the password
         const newRegisteredUser = {
             userName: req.body.userName,
             password: hashedPassword,
             emailAddress: req.body.emailAddress,
-        }
+        };
 
         await User.create(newRegisteredUser, function(err, password) {
             if (err) {
@@ -75,9 +75,9 @@ const saltRounds = 10;
         console.log(e);
         res.status(500).send({
             'message': `Server Exception: ${e.message}`
-        })
+        });
     }
-})
+});
 
 /**
  * login
@@ -89,7 +89,7 @@ const saltRounds = 10;
  *     description: API for logging in
  *     summary: allows username to log in
  *     requestBody:
- *       description: log in
+ *       description: log into username
  *       content:
  *         application/json:
  *           schema:
@@ -111,45 +111,42 @@ const saltRounds = 10;
  *       '501':
  *         description: MongoDB Exception
  */
-router.post('/login', async(req, res) => {
+router.post("/login", async(req, res) => {
     try {
-        User.findOne({ userName: req.body.userName }, function(err, user) {
+        User.findOne({ userName : req.body.userName }, function(err, user) {
             if (err) {
                 console.log(err);
                 res.status(501).send({
                     'message': `MongoDB Exception: ${err}`
-                })
+                });
             } else {
                 console.log(user);
                 if (user) {
-                    let passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+                    let passwordIsValid = bcrypt.compareSync(
+                        req.body.password, 
+                        User.password
+                        );
 
                     if (passwordIsValid) {
                         console.log('User has successfully logged in');
                         res.status(200).send({
-                            'message': 'Login successful!'
-                        })
+                            'message': 'User logged in'
+                        });
                     } else {
                         console.log('Invalid username/password');
                         res.status(401).send({
-                            'message': `Invalid username/password`
-                        })
+                            'message': `Invalid username and/or password`
+                        });
                     }
-                } else {
-                    console.log('Invalid username/password');
-                    res.status(401).send({
-                        'message': `Invalid username/password`
-                    })
                 }
-            }
-
             if (!user) {
-                console.log("Invalid username/password");
+                console.log("Invalid username and/or password");
                 res.status(401).send({
-                    message: `Invalid username/password`,
+                    message: `Invalid username and/or password`,
                 });
             }
-        })
+        }
+        });
     } catch (e) {
         console.log(e);
         res.status(500).send({
