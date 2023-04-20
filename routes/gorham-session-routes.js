@@ -22,18 +22,24 @@ const saltRounds = 10;
  * /api/signup:
  *   post:
  *     tags:
- *       - Passwords
- *     name: register
- *     summary: Register password
+ *       - User
+ *     description: API that creates a new username
+ *     summary: Creates a new username
  *     requestBody:
- *       description: Password information
+ *       description: creation of username
  *       content:
  *         application/json:
  *           schema:
  *             required:
+ *               - userName
  *               - password
+ *               - emailAddress
  *             properties:
+ *               userName:
+ *                 type: string
  *               password:
+ *                 type: string
+ *               email address:
  *                 type: string
  *     responses:
  *       '200':
@@ -48,12 +54,13 @@ const saltRounds = 10;
  router.post('/signup', async(req, res) => {
     try {
         let hashedPassword = bcrypt.hashSync(req.body.password, saltRounds); // salt/hash the password
-        const newPassword = {
-            passId: uuidv4(),
-            pass: hashedPassword
+        const newRegisteredUser = {
+            userName: req.body.userName,
+            password: hashedPassword,
+            emailAddress: req.body.emailAddress,
         }
 
-        await User.create(newPassword, function(err, password) {
+        await User.create(newRegisteredUser, function(err, password) {
             if (err) {
                 console.log(err);
                 res.status(501).send({
@@ -67,36 +74,36 @@ const saltRounds = 10;
     } catch (e) {
         console.log(e);
         res.status(500).send({
-            'message': `Server Excpetion: ${e.message}`
+            'message': `Server Exception: ${e.message}`
         })
     }
 })
 
 /**
- * verify-password
+ * login
  * @openapi
- * /api/verify-password:
+ * /api/login:
  *   post:
  *     tags:
- *       - Passwords
- *     name: verify password
- *     summary: Verifies a password
+ *       - User
+ *     description: API for logging in
+ *     summary: allows username to log in
  *     requestBody:
- *       description: Password information
+ *       description: log in
  *       content:
  *         application/json:
  *           schema:
  *             required:
- *               - passId
+ *               - userName
  *               - password
  *             properties:
- *               passId:
+ *               userName:
  *                 type: string
  *               password:
  *                 type: string
  *     responses:
  *       '200':
- *         description: Password added to MongoDB
+ *         description: User has successfully logged in
  *       '401':
  *         description: Invalid passId or password
  *       '500':
@@ -104,36 +111,43 @@ const saltRounds = 10;
  *       '501':
  *         description: MongoDB Exception
  */
-router.post('/verify-password', async(req, res) => {
+router.post('/login', async(req, res) => {
     try {
-        Password.findOne({'passId': req.body.passId}, function(err, password) {
+        User.findOne({ userName: req.body.userName }, function(err, user) {
             if (err) {
                 console.log(err);
                 res.status(501).send({
                     'message': `MongoDB Exception: ${err}`
                 })
             } else {
-                console.log(password);
-                if (password) {
-                    let passwordIsValid = bcrypt.compareSync(req.body.password, password.pass);
+                console.log(user);
+                if (user) {
+                    let passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
                     if (passwordIsValid) {
-                        console.log('Password matches');
+                        console.log('User has successfully logged in');
                         res.status(200).send({
-                            'message': 'Password matches'
+                            'message': 'Login successful!'
                         })
                     } else {
-                        console.log('Password is incorrect');
+                        console.log('Invalid username/password');
                         res.status(401).send({
-                            'message': `Invalid passId or password`
+                            'message': `Invalid username/password`
                         })
                     }
                 } else {
-                    console.log('Invalid passId');
+                    console.log('Invalid username/password');
                     res.status(401).send({
-                        'message': `Invalid passId or password`
+                        'message': `Invalid username/password`
                     })
                 }
+            }
+
+            if (!user) {
+                console.log("Invalid username/password");
+                res.status(401).send({
+                    message: `Invalid username/password`,
+                });
             }
         })
     } catch (e) {

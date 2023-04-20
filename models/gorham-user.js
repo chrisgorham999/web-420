@@ -14,11 +14,11 @@ const mongoose = require('mongoose');
 // define new mongoose schema
 const Schema = mongoose.Schema;
 
-// defines the role schema
+// defines the user schema
 let userSchema = new Schema({    
     userName: { type: String },
     Password: { type: String },
-    emailAddress: [emailAddressSchema]
+    emailAddress: { type: String },
 })
 
 // exports the model
