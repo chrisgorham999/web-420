@@ -15,9 +15,8 @@ const User = require("../models/gorham-user");
 const bcrypt = require("bcryptjs");
 
 const saltRounds = 10;
-
 /**
- * sign up
+ * signup
  * @openapi
  * /api/signup:
  *   post:
@@ -39,7 +38,7 @@ const saltRounds = 10;
  *                 type: string
  *               password:
  *                 type: string
- *               email address:
+ *               emailAddress:
  *                 type: string
  *     responses:
  *       '200':
@@ -124,7 +123,7 @@ router.post("/login", async(req, res) => {
                 if (user) {
                     let passwordIsValid = bcrypt.compareSync(
                         req.body.password, 
-                        User.password
+                        user.password
                         );
 
                     if (passwordIsValid) {
