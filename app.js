@@ -19,6 +19,7 @@ const mongoose = require("mongoose");
 const composerAPI = require("./routes/gorham-composer-routes");
 const personAPI = require("./routes/gorham-person-routes");
 const userAPI = require("./routes/gorham-session-routes");
+const nodeShopperAPI = require("./routes/gorham-node-shopper-routes");
 
 // use express as the app
 let app = express();
@@ -68,6 +69,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 app.use("/api", composerAPI);
 app.use("/api", personAPI);
 app.use("/api", userAPI);
+app.use("/api", nodeShopperAPI);
 
 // uses the http library to create a port and log to the console the port that is being listened to based on our port variable in the app
 http.createServer(app).listen(app.get("port"), function() {
