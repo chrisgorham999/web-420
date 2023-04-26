@@ -168,4 +168,50 @@ const Customer = require("../models/gorham-customer");
     }
  });
 
+
+ /**
+ * findAllInvoicesByUserName
+ * @openapi
+ * /api/customers/{username}/invoices:
+ *   get:
+ *     tags:
+ *       - Customers
+ *     description:  API for looking up an invoice
+ *     summary: looks up an invoice
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         required: true
+ *         description: Customer userName
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Customer Found in MongoDB
+ *       '500':
+ *         description: Server exception
+ *       '501':
+ *         description: MongoDB Exception
+ */
+router.get('/customers/:username/invoices', async (req, res) => {
+    try {
+      Customer.findOne({ 'userName': req.params.username }, function (err, customer) {
+        if (err) {
+          console.log(err);
+          res.status(501).send({
+            message: `MongoDB Exception: ${err}`,
+          });
+        } else {
+          console.log(customer);
+          res.json(customer);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(500).send({
+        message: `Server Exception: ${e.message}`,
+      });
+    }
+  });
+
 module.exports = router;
