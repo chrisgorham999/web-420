@@ -77,27 +77,32 @@ const Customer = require("../models/gorham-customer");
 /**
  * createInvoiceByUserName
  * @openapi
- * /api/customers/:username/invoices
+ * /api/customers/{username}/invoices:
  *   post:
  *     tags:
  *       - Customers
  *     name: createInvoiceByUserName
- *     summary: Creates a new invoice document
+ *     description: API for creating a new invoice by username
+ *     summary: Create a new invoice by username
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         required: true
+ *         description: The username that creates a new invoice 
+ *         schema: 
+ *           type: string
  *     requestBody:
- *       description: Invoice information
+ *       description: The invoice information
  *       content:
  *         application/json:
  *           schema:
  *             required:
- *               - username
  *               - subtotal
  *               - tax
  *               - dateCreated
  *               - dateShipped
  *               - lineItems
  *             properties:
- *               username:
- *                 type: string
  *               subtotal:
  *                 type: string
  *               tax:
@@ -109,21 +114,58 @@ const Customer = require("../models/gorham-customer");
  *               lineItems:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     price:
- *                       type: number
- *                     quantity:
- *                       type: number
+ *                      type: object
+ *                      properties:
+ *                          name:
+ *                              type: string
+ *                          price: 
+ *                              type: number
+ *                          quantity:
+ *                              type: number
  *     responses:
  *       '200':
- *         description: Student added to MongoDB Atlas
+ *         description: Customer invoice added
  *       '500':
  *         description: Server Exception
  *       '501':
  *         description: MongoDB Exception
  */
+ router.post('/customers/:username/invoices', async (req, res) => {
+    try {
+        await Customer.findOne({'userName': req.params.username}, 
+        function(err, customer){
+            let newInvoice= {
+                subtotal: req.body.subtotal,
+                tax: req.body.tax,
+                dateCreated: req.body.dateCreated,
+                dateShipped: req.body.dateShipped,
+                lineItems: req.body.lineItems
+            };
+
+            if (err){
+                console.log(err);
+                res.status(501).send({
+                    'message': `MongoDB Exception: ${err}` 
+                })
+            } else{
+                customer.invoices.push(newInvoice);
+
+                customer.save(function(err, Customer){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log(Customer);
+                        res.json(Customer); 
+                    }
+                })
+            }
+        })
+    }catch(e){
+        console.log(e);
+        res.status(500).send({
+            'message': `Server Exception: ${e.message}`
+        })
+    }
+ });
 
 module.exports = router;
