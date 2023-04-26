@@ -3,7 +3,7 @@
 ; Title: gorham-node-shopper-routes.js 
 ; Author: Chris Gorham
 ; Date: 24 Apr 2023
-; Description: This code is for the NodeSecurity Week 6 Project in Web420
+; Description: This code is for the NodeShopper Week 7 Project in Web420
 ; Sources Used:  N/A
 ;=====================================
 */
