@@ -176,8 +176,8 @@ const Customer = require("../models/gorham-customer");
  *   get:
  *     tags:
  *       - Customers
- *     description:  API for looking up an invoice
- *     summary: looks up an invoice
+ *     description:  API for looking up an invoice by username
+ *     summary: Looks up an invoice by username
  *     parameters:
  *       - name: username
  *         in: path
